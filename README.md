@@ -188,7 +188,7 @@ event:
   driven:
     orgName: risen #事件发送组织名称 默认risen
     serverName: application #事件服务名称 默认会获取spring的应用名称
-    serverGroup: default #事件服务分组名称 默认为default 为了区分相同数据库下多环境服务事件抢渡发送问题 如果加入Apollo配置中心会使用Apollo集群名称的配置apollo.cluster
+    serverGroup: default #事件服务分组名称 默认为default 为了区分相同数据库下多环境服务事件抢渡发送问题
     sameEnvLimit: false #1.0.4版本添加，消息环境自动隔离功能，开启后消费者只消费同一环境生产者的消息 默认false不开启 注意使用此功能，不同环境的消费者，groupId也需要不一样
     publisherSkip: false #是否跳过事件发送器注入 默认为false不跳过
     subscriberSkip: false #是否跳过事件接收器注入 默认为false不跳过
