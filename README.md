@@ -5,7 +5,7 @@
 2. 实现思路当发送消息时持久化消息与本地事务绑定
 
 ## 规范说明
-1. eventType 事件类型规范标准 组织:服务:事件类型 例如 risen:user-service:create_user 装修:用户服务:创建用户事件
+1. eventType 事件类型规范标准 组织:服务:事件类型 例如 risen:user-service:create_user 基础架构:用户服务:创建用户事件
 2. eventContextKey 事件聚合根ID 消息基础设施保证相同的ContextKey下事件有序 可以为空
 
 ## 快速使用
