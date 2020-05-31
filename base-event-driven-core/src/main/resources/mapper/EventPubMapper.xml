@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.risen.base.event.driven.core.mapper.EventPubMapper">
+    <resultMap id="BaseResultMap" type="com.risen.base.event.driven.core.model.EventPub">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="event_id" jdbcType="VARCHAR" property="eventId"/>
+        <result column="event_occur_time" jdbcType="VARCHAR" property="eventOccurTime"/>
+        <result column="event_group" jdbcType="VARCHAR" property="eventGroup"/>
+        <result column="event_service" jdbcType="VARCHAR" property="eventService"/>
+        <result column="event_status" jdbcType="INTEGER" property="eventStatus"/>
+        <result column="event_context_key" jdbcType="VARCHAR" property="eventContextKey"/>
+        <result column="event_type" jdbcType="VARCHAR" property="eventType"/>
+        <result column="metadata" jdbcType="VARCHAR" property="metadata"/>
+        <result column="payload_data" jdbcType="VARCHAR" property="payloadData"/>
+        <result column="lock_version" jdbcType="INTEGER" property="lockVersion"/>
+        <result column="ctime" jdbcType="TIMESTAMP" property="ctime"/>
+        <result column="mtime" jdbcType="TIMESTAMP" property="mtime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+          id,event_id,event_occur_time,event_group,event_service,event_status,event_context_key,
+        event_type,metadata,payload_data,lock_version,ctime,mtime
+  </sql>
+    <select id="selectLimitedEntityByEventType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from event_pub
+        where event_status = #{eventStatus,jdbcType=INTEGER}
+        and event_group = #{eventGroup,jdbcType=VARCHAR} and event_service = #{eventService,jdbcType=VARCHAR}
+        limit #{limited}
+    </select>
+    <select id="selectLimitedEntityByEventTypeBeforeTheSpecifiedUpdateTime"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from event_pub
+        where event_status = #{eventStatus,jdbcType=INTEGER} and event_group = #{eventGroup,jdbcType=VARCHAR} and
+        event_service = #{eventService,jdbcType=VARCHAR}
+        <![CDATA[
+        and mtime < #{beforeThisTime,jdbcType=TIMESTAMP}
+        ]]>
+        LIMIT #{limited}
+    </select>
+    <select id="selectByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from event_pub
+        where id IN
+        <foreach collection="ids" item="id"
+                 separator="," open="(" close=")">
+            #{id,jdbcType=BIGINT}
+        </foreach>
+    </select>
+    <select id="selectByEventStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from event_pub
+        where event_status = #{eventStatus,jdbcType=INTEGER} order by id desc limit 1000
+    </select>
+    <select id="selectByEventId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from event_pub
+        where event_id = #{eventId,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByPrimaryKeySelectiveWithOptimisticLock"
+            parameterType="com.risen.base.event.driven.core.model.EventPub">
+        update event_pub
+        <set>
+            <if test="eventId != null">
+                event_id = #{eventId,jdbcType=VARCHAR},
+            </if>
+            <if test="eventOccurTime != null">
+                event_occur_time = #{eventOccurTime,jdbcType=VARCHAR},
+            </if>
+            <if test="eventGroup != null">
+                event_group = #{eventGroup,jdbcType=VARCHAR},
+            </if>
+            <if test="eventService != null">
+                event_service = #{eventService,jdbcType=VARCHAR},
+            </if>
+            <if test="eventStatus != null">
+                event_status = #{eventStatus,jdbcType=INTEGER},
+            </if>
+            <if test="eventContextKey != null">
+                event_context_key = #{eventContextKey,jdbcType=VARCHAR},
+            </if>
+            <if test="eventType != null">
+                event_type = #{eventType,jdbcType=VARCHAR},
+            </if>
+            <if test="payloadData != null">
+                payload_data = #{payloadData,jdbcType=VARCHAR},
+            </if>
+            lock_version = lock_version + 1
+        </set>
+        where id = #{id,jdbcType=BIGINT} and lock_version = #{lockVersion,jdbcType=INTEGER}
+    </update>
+    <update id="updateEventStatusByEventIdKeyInCasMode">
+        UPDATE event_pub
+        SET
+            event_status = #{target,jdbcType=INTEGER}
+        WHERE event_id = #{eventId,jdbcType=VARCHAR} AND event_status = #{expect,jdbcType=INTEGER}
+    </update>
+</mapper>

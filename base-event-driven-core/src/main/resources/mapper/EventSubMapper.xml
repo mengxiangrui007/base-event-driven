@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.risen.base.event.driven.core.mapper.EventSubMapper">
+    <resultMap id="BaseResultMap" type="com.risen.base.event.driven.core.model.EventSub">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="event_id" jdbcType="VARCHAR" property="eventId"/>
+        <result column="event_occur_time" jdbcType="VARCHAR" property="eventOccurTime"/>
+        <result column="event_group" jdbcType="VARCHAR" property="eventGroup"/>
+        <result column="event_service" jdbcType="VARCHAR" property="eventService"/>
+        <result column="event_status" jdbcType="INTEGER" property="eventStatus"/>
+        <result column="event_context_key" jdbcType="VARCHAR" property="eventContextKey"/>
+        <result column="event_type" jdbcType="VARCHAR" property="eventType"/>
+        <result column="metadata" jdbcType="VARCHAR" property="metadata"/>
+        <result column="payload_data" jdbcType="VARCHAR" property="payloadData"/>
+        <result column="lock_version" jdbcType="INTEGER" property="lockVersion"/>
+        <result column="ctime" jdbcType="TIMESTAMP" property="ctime"/>
+        <result column="mtime" jdbcType="TIMESTAMP" property="mtime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,event_id,event_occur_time,event_group,event_service,event_status,event_context_key,
+        event_type,metadata,payload_data,lock_version,ctime,mtime
+    </sql>
+    <update id="updateEventStatusByPrimaryKeyInCasMode">
+        UPDATE event_sub
+        SET
+            event_status = #{target,jdbcType=INTEGER}
+        WHERE id = #{id,jdbcType=BIGINT} AND event_status = #{expect,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from event_sub
+        where id IN
+        <foreach collection="ids" item="id"
+                 separator="," open="(" close=")">
+            #{id,jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <select id="selectByEventStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from event_sub
+        where event_status = #{eventStatus,jdbcType=INTEGER} order by id desc limit 1000
+    </select>
+</mapper>
