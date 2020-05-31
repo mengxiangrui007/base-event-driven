@@ -164,8 +164,6 @@ mybatis.mapperLocations=classpath:mapper/*.xml
 #### 实现事件处理Handler
 @EventType 为事件类型 bizType 业务类型 serverName 生产方服务名称 可通过Eureka查看服务名称 
 
-`注意1.0.3版本以前需要由继承EventHandlerAdapter升级为实现DomainEventHandler接口`
-
 ```
 @EventType(bizType = "create_user",serverName = "event-driven")
 @Component
